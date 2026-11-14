@@ -80,3 +80,65 @@ was changed in `.env` after first startup, the existing `airflow-auth` volume
 still holds the original password; update that file explicitly or reset the
 volume after backing up any required data. If ports are occupied, stop the local
 `run_airflow.sh` instance before starting Compose.
+
+## Local Apache Airflow (Python 3.12)
+
+Airflow runs the existing validation, preprocessing, model comparison, tuning,
+evaluation, and artifact checks in order. It is configured for **manual runs**:
+opening the UI does not start training. Each run saves its train/test split,
+model, and reports under `.airflow/artifacts/<run-id-hash>/`; it never overwrites
+the existing files in `data/processed/`, `models/`, or `reports/`. Preprocessing
+is fitted by the existing training pipelines on the training split only; the
+test split is used once for final evaluation.
+
+From the project root on Ubuntu, install Airflow in its own environment (run
+these commands once):
+
+```bash
+python3 -m venv .airflow-venv
+source .airflow-venv/bin/activate
+AIRFLOW_VERSION=3.4.0
+PYTHON_VERSION=3.12
+CONSTRAINT_URL="https://raw.githubusercontent.com/apache/airflow/constraints-${AIRFLOW_VERSION}/constraints-${PYTHON_VERSION}.txt"
+python -m pip install "apache-airflow==${AIRFLOW_VERSION}" --constraint "${CONSTRAINT_URL}"
+python -m pip install 'numpy>=1.26,<3' 'pandas>=2.2,<3' 'scikit-learn>=1.5,<2' xgboost 'joblib>=1.4,<2' 'matplotlib>=3.8,<4'
+python -m pip check
+```
+
+The second install only adds the ML packages used by the DAG. Airflow's
+published constraints pin pandas 3.1, while this project requires pandas <3,
+so do not apply those constraints to the second install.
+
+For each new terminal session, from the project root:
+
+```bash
+bash run_airflow.sh
+```
+
+This starts the scheduler and UI using `.airflow-venv`, with the project DAGs
+and SQLite database under `.airflow/`. Stop any other Airflow instance already
+using port 8080 before starting it. The first startup initializes the local
+database. Open **http://localhost:8080** and log in with username `admin` and
+password `admin`. The local password file is ignored by Git.
+Find `student_mental_health_ml`, click its **Trigger** button, and watch the
+task statuses in its run view. Click a task and open **Logs** to see progress or
+an error traceback. Tuning may take several minutes because it cross-validates
+three models. Stop Airflow with **Ctrl+C** in the terminal. To rerun the whole
+pipeline, start Airflow again and click **Trigger** again; the new run uses a
+new artifact directory. To rerun a failed task, select it in the run view and
+choose **Clear** (this also allows downstream tasks to run again).
+
+To check DAG discovery without starting training, use the same environment:
+
+```bash
+source .airflow-venv/bin/activate
+export AIRFLOW_HOME="$PWD/.airflow"
+export AIRFLOW__CORE__DAGS_FOLDER="$PWD/dags"
+export AIRFLOW__CORE__LOAD_EXAMPLES=False
+export PYTHONPATH="$PWD"
+airflow dags list
+airflow dags list-import-errors --local
+```
+
+The staged results are intentionally separate from the model used by Streamlit.
+Review the successful run's artifacts before choosing to replace that model.
