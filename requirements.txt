@@ -29,3 +29,8 @@ pytest>=8,<10
 python-dotenv>=1,<2
 # xgboost
 xgboost
+
+
+streamlit 
+
+

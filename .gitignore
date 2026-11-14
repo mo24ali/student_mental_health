@@ -1,4 +1,6 @@
 .venv/
+.airflow-venv/
+.airflow/
 .ipynb_checkpoints/
 __pycache__/
 .env
