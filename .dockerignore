@@ -12,3 +12,9 @@ data
 models
 reports
 .streamlit
+!data/
+data/*
+!data/raw/
+data/raw/*
+!data/raw/student_mental_health.csv
+!.streamlit/

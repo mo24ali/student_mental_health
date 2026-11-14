@@ -10,6 +10,8 @@ COPY docker/streamlit/requirements.txt /tmp/requirements.txt
 RUN pip install --no-cache-dir -r /tmp/requirements.txt && rm /tmp/requirements.txt
 COPY --chown=app:app app/ app/
 COPY --chown=app:app src/ src/
+COPY --chown=app:app .streamlit/ .streamlit/
+COPY --chown=app:app data/raw/student_mental_health.csv data/raw/student_mental_health.csv
 USER app
 EXPOSE 8501
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s \
