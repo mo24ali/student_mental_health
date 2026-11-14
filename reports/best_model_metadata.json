@@ -1,0 +1,12 @@
+{
+    "model_name": "Logistic Regression",
+    "cv_macro_f1": 0.7516955367384908,
+    "test_macro_f1": 0.75778404358299,
+    "test_accuracy": 0.7575,
+    "test_samples": 400,
+    "classes": [
+        "Low",
+        "Medium",
+        "High"
+    ]
+}
