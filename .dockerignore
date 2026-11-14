@@ -1,0 +1,14 @@
+.git
+.env
+.venv
+.airflow-venv
+.airflow
+.pytest_cache
+**/__pycache__
+**/*.pyc
+notebooks
+tests
+data
+models
+reports
+.streamlit
