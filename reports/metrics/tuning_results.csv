@@ -1,0 +1,4 @@
+Model,Best CV Macro F1,Best Parameters
+Logistic Regression,0.7516955367384908,"{'classifier__class_weight': 'balanced', 'classifier__C': 100}"
+XGBoost,0.6985261706950514,"{'classifier__subsample': 0.8, 'classifier__n_estimators': 200, 'classifier__max_depth': 3, 'classifier__learning_rate': 0.05, 'classifier__colsample_bytree': 1.0}"
+Random Forest,0.6803100542163707,"{'classifier__n_estimators': 100, 'classifier__min_samples_split': 10, 'classifier__min_samples_leaf': 4, 'classifier__max_features': 'log2', 'classifier__max_depth': 10}"
